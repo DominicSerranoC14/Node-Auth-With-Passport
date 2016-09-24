@@ -12,10 +12,11 @@ router.get('/', (req, res) => {
   res.render('index');
 });
 
-router.post('/', (req, res) => {
-  Test.create(req.body)
-  .then(() => res.render('index', {msg: 'Test message was sent to testdb -- check mongo shell'}))
-});
+// router.post('/', (req, res) => {
+//   // Test.create(req.body)
+//   // .then(() => res.render('index', {msg: 'Test message was sent to testdb -- check mongo shell'}))
+//
+// });
 /////////////////////////////////////////
 
 

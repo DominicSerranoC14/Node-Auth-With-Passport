@@ -6,6 +6,11 @@ block content
     if msg
       h1 #{msg}
 
+    if isAuthenticated === true
+      h1 Hello #{user.name}  
+
     form(method='POST')
-      input#test(type='text' name='test')
+      input#username(type='text' name='username' placeholder='User name')
+      input#password(type='text' name='password' placeholder='Password')
+      input#confirmation(type='text' name='confirmation' placeholder='Repeat Password')
       button(type='submit') Send
