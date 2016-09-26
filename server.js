@@ -10,6 +10,8 @@ const port = process.env.PORT || 3000;
 const { connect } = require('./db/database.js');
 const passport = require('passport');
 const passportLocal = require('passport-local');
+const facebookStrategy = require('passport-facebook');
+const User = require('./models/test');
 /////////////////////////////////////////
 
 
@@ -26,7 +28,11 @@ app.use(expressSession({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
+/////////////////////////////////////////
 
+
+/////////////////////////////////////////
+//Local Strategy with passport
 passport.use(new passportLocal.Strategy((username, password, done) => {
   //Grab user doc from db
   if ( password === password ) {
@@ -35,7 +41,29 @@ passport.use(new passportLocal.Strategy((username, password, done) => {
     done(null, null);
   }
 }));
+/////////////////////////////////////////
 
+
+/////////////////////////////////////////
+//Facebook strategy with passport
+passport.use(new facebookStrategy.Strategy({
+    clientID: '633086850185459',
+    clientSecret: '332f3383576956033155c07269129ec0',
+    callbackURL: "http://localhost:3000/auth/facebook/callback",
+    profileFields: ['id', 'displayName', 'photos', 'email']
+  },
+  (accessToken, refreshToken, profile, done) => {
+    //Need to add test if there is no user in db,
+    //then adds to db. If there is a match continue
+    User.find({ facebookId: profile.id }, function (err, user) {
+      return done(null, user);
+    });
+  }));
+/////////////////////////////////////////
+
+
+/////////////////////////////////////////
+//Serializing Functions
 passport.serializeUser((user, done) => {
   done(null, user.id);
 });
@@ -52,14 +80,19 @@ passport.deserializeUser((id, done) => {
 app.use(routes);
 
 app.post('/', passport.authenticate('local'), (req, res) => {
-
-  console.log("Test req.user", req.user);
-
   res.render('index', {
     isAuthenticated: req.isAuthenticated(),
     user: req.user
-  })
+  });
+});
 
+app.get('/auth/facebook', passport.authenticate('facebook'));
+
+app.get('/auth/facebook/callback',
+  passport.authenticate('facebook', { failureRedirect: '/login' }),
+  (req, res) => {
+    res.render('index');
+    res.redirect('/');
 });
 
 app.get('/logout', (req, res) => {
