@@ -3,11 +3,10 @@ extends layout.pug
 block content
   .chatroom-div
 
-    if msg
-      h1 #{msg}
-
-    if isAuthenticated === true
-      h1 Hello #{user.name}  
+    if isAuthenticated
+      h1 Hello #{user.name}
+      p
+        a(href='/logout') Logout
 
     form(method='POST')
       input#username(type='text' name='username' placeholder='User name')

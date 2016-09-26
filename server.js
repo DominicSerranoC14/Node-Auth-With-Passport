@@ -37,12 +37,12 @@ passport.use(new passportLocal.Strategy((username, password, done) => {
 }));
 
 passport.serializeUser((user, done) => {
-  done(user.id);
+  done(null, user.id);
 });
 
 passport.deserializeUser((id, done) => {
   //Query database or cache here
-  done({id: id, id: name});
+  done(null, {id: id});
 });
 /////////////////////////////////////////
 
@@ -60,6 +60,12 @@ app.post('/', passport.authenticate('local'), (req, res) => {
     user: req.user
   })
 
+});
+
+app.get('/logout', (req, res) => {
+  //Logout function is enabled with passport
+  req.logout();
+  res.redirect('/');
 });
 
 /////////////////////////////////////////
