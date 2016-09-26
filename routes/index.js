@@ -2,7 +2,7 @@
 
 const { Router } = require('express');
 const router = Router();
-const Test = require('../models/test');
+const Test = require('../models/user');
 /////////////////////////////////////////
 
 

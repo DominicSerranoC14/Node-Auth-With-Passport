@@ -11,7 +11,7 @@ const { connect } = require('./db/database.js');
 const passport = require('passport');
 const passportLocal = require('passport-local');
 const facebookStrategy = require('passport-facebook');
-const User = require('./models/test');
+const User = require('./models/user');
 /////////////////////////////////////////
 
 
@@ -53,10 +53,15 @@ passport.use(new facebookStrategy.Strategy({
     profileFields: ['id', 'displayName', 'photos', 'email']
   },
   (accessToken, refreshToken, profile, done) => {
-    //Need to add test if there is no user in db,
-    //then adds to db. If there is a match continue
-    User.find({ facebookId: profile.id }, function (err, user) {
-      return done(null, user);
+    User.findOne({ facebookId: profile.id }, function (err, user) {
+      if (!user) {
+        console.log("No user");
+        User.create({ facebookId: profile.id, username: profile.displayName })
+        .then((user) => done(null, user))
+        .catch(err);
+      } else {
+        done(null, user);
+      }
     });
   }));
 /////////////////////////////////////////
@@ -65,7 +70,7 @@ passport.use(new facebookStrategy.Strategy({
 /////////////////////////////////////////
 //Serializing Functions
 passport.serializeUser((user, done) => {
-  done(null, user.id);
+  done(null, user._id);
 });
 
 passport.deserializeUser((id, done) => {
@@ -89,10 +94,13 @@ app.post('/', passport.authenticate('local'), (req, res) => {
 app.get('/auth/facebook', passport.authenticate('facebook'));
 
 app.get('/auth/facebook/callback',
-  passport.authenticate('facebook', { failureRedirect: '/login' }),
+  passport.authenticate('facebook', { failureRedirect: '/' }),
   (req, res) => {
-    res.render('index');
-    res.redirect('/');
+    console.log("Test req.user", req.user);
+    res.render('index', {
+      isAuthenticated: req.isAuthenticated(),
+      user: req.user
+    });
 });
 
 app.get('/logout', (req, res) => {
