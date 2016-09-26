@@ -56,7 +56,11 @@ passport.use(new facebookStrategy.Strategy({
     User.findOne({ facebookId: profile.id }, function (err, user) {
       if (!user) {
         console.log("No user");
-        User.create({ facebookId: profile.id, username: profile.displayName })
+        User.create({
+          facebookId: profile.id,
+          username: profile.displayName,
+          profilePic: profile.photos[0].value
+        })
         .then((user) => done(null, user))
         .catch(err);
       } else {
@@ -93,10 +97,13 @@ app.post('/', passport.authenticate('local'), (req, res) => {
 
 app.get('/auth/facebook', passport.authenticate('facebook'));
 
+
+
 app.get('/auth/facebook/callback',
   passport.authenticate('facebook', { failureRedirect: '/' }),
   (req, res) => {
-    console.log("Test req.user", req.user);
+    console.log("Test req.body.facebookId", req.body.facebookId);
+    console.log("Test req.user.facebookId", req.user.facebookId);
     res.render('index', {
       isAuthenticated: req.isAuthenticated(),
       user: req.user
