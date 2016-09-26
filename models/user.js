@@ -7,6 +7,7 @@ const mongoose = require('mongoose');
 /////////////////////////////////////////
 module.exports = mongoose.model('user', {
   facebookId: String,
-  username: String
+  username: String,
+  profilePic: String
 });
 /////////////////////////////////////////

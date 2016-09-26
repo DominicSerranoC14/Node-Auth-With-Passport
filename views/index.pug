@@ -5,13 +5,13 @@ block content
 
     if isAuthenticated
       h1 Hello #{user.username}
+      img(src=user.profilePic)
       p
         a(href='/logout') Logout
 
     form(method='POST')
       input#username(type='text' name='username' placeholder='User name')
       input#password(type='password' name='password' placeholder='Password')
-      input#confirmation(type='password' name='confirmation' placeholder='Repeat Password')
       button(type='submit') Local login
 
     form(method='GET')
