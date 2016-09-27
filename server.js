@@ -34,9 +34,10 @@ app.use(passport.session());
 /////////////////////////////////////////
 //Local Strategy with passport
 passport.use(new passportLocal.Strategy((username, password, done) => {
+  //Need to query db and add user if doesnt exist
   //Grab user doc from db
   if ( password === password ) {
-    done(null, { id: username, name: username });
+    done(null, { _id: username, name: username });
   } else {
     done(null, null);
   }
@@ -96,7 +97,6 @@ app.post('/', passport.authenticate('local'), (req, res) => {
 });
 
 app.get('/auth/facebook', passport.authenticate('facebook'));
-
 
 
 app.get('/auth/facebook/callback',
